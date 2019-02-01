@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  php:
+    build:
+      context: ./etc/php7
+      args:
+        TIMEZONE: "Europe/Madrid"
+    volumes:
+      - .:/code
+    tty: true
