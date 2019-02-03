@@ -6,14 +6,11 @@ use Scrapereus\Scraper;
 
 class ScraperTest extends TestCase
 {
-    protected function setUp()
+    public function testgetProxy()
     {
-        $this->su = new Scraper();
-    }
+        $scraper = new Scraper(['proxies' => [$proxyTest]]);
+        $item = $scraper->getProxy();
 
-    public function testGetUseragentRandom()
-    {
-        $items = $this->su->getUseragentRandom();
-        $this->assertEquals(1, count($items));
+        $this->assertEquals($item, $proxyTest);
     }
 }

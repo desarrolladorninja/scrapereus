@@ -30,6 +30,7 @@ class ProxyTest extends TestCase
             'a:b:c:d',
             'a:b:c:d',
         ]]);
+
         $item = $proxy->get();
         $this->assertFalse($item);
         $item = $proxy->get();

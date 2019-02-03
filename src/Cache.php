@@ -1,6 +1,5 @@
 <?php
 namespace Scrapereus;
-
 use Stash;
 
 class Cache
