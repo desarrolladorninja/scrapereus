@@ -6,18 +6,35 @@ use Scrapereus\Browser;
 
 class BrowserTest extends TestCase
 {
-	public function testconstruct()
-	{
-		$browser = new Browser();
+    public function testconstruct()
+    {
+        $browser = new Browser();
 
-		$this->assertTrue(true);
-	}
+        $this->assertTrue(true);
+    }
 
-	public function testrequest()
-	{
-		$browser = new Browser();
-		$html = $browser->request('http://example.com');
+    public function testrequest()
+    {
+        $browser = new Browser();
+        $html = $browser->request('http://example.com');
 
-		$this->assertTrue(is_string($html));
-	}
+        $this->assertTrue(is_string($html));
+    }
+
+    public function testloadUserAgent()
+    {
+        $browser = new Browser();
+        $this->assertEquals(512, count($browser->config['userAgents']));
+    }
+
+    public function testgetUserAgent()
+    {
+        $browser = new Browser();
+
+        $item = $browser->getUserAgent('random');
+        $this->assertTrue(!empty($item));
+
+        $item = $browser->getUserAgent('google');
+        $this->assertEquals($item, 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
+    }
 }

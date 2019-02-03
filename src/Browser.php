@@ -19,17 +19,33 @@ class Browser
         ];
 
         $this->config = $config + $defaults;
+
+        $this->loadUserAgent();
+    }
+
+    public function loadUserAgent()
+    {
+        $file = __DIR__.'/../var/useragent.txt';
+        $agentsData = file_get_contents($file);
+        $agents = explode("\n", $agentsData);
+
+        $this->config['userAgents'] = $agents;
     }
 
     public function getUserAgent($name)
     {
         switch ($name) {
             case 'google':
-                return 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
+                    return 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
+                break;
+
+                case 'random':
+                    $id = rand(0, count($this->config['userAgents'])-1);
+                    return $this->config['userAgents'][$id];
                 break;
             
             default:
-                return $name;
+                    return $name;
                 break;
         }
     }
