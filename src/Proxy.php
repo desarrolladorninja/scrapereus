@@ -24,7 +24,7 @@ class Proxy
         do {
             $proxy = array_shift($this->config['proxies']);
             if ($ok = $this->check($proxy)) {
-                return $proxy;
+                return $this->parse($proxy);
             }
         } while (!$ok && count($this->config['proxies']) > 0);
 

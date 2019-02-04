@@ -6,11 +6,14 @@ use Scrapereus\Scraper;
 
 class ScraperTest extends TestCase
 {
-    public function testgetProxy()
+    public function testrequest()
     {
-        $scraper = new Scraper(['proxies' => [$proxyTest]]);
-        $item = $scraper->getProxy();
+        $scraper = new Scraper();
+        $item = $scraper->request('https://desarrollador.ninja/scraper.html');
+        $this->assertEquals($item, "<html>
 
-        $this->assertEquals($item, $proxyTest);
+<body><p>scraper</p> test</body>
+</html>
+");
     }
 }
