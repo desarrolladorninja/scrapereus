@@ -10,10 +10,10 @@ class Browser
     {
         $defaults = [
             'proxy' => [
-                'ip' => null,
+                'host' => null,
                 'port' => null,
                 'user' => null,
-                'password' => null
+                'pass' => null
             ],
             'userAgent' => 'Mozilla/5.1 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
         ];
@@ -58,8 +58,8 @@ class Browser
             ],
         ];
 
-        if (isset($this->config['proxy']['ip'])) {
-            $clientParameters['curl'][CURLOPT_PROXY] = $this->config['proxy']['ip'];
+        if (isset($this->config['proxy']['host'])) {
+            $clientParameters['curl'][CURLOPT_PROXY] = $this->config['proxy']['host'];
         }
 
         if (isset($this->config['proxy']['port'])) {
@@ -67,7 +67,7 @@ class Browser
         }
 
         if (isset($this->config['proxy']['user'])) {
-            $clientParameters['curl'][CURLOPT_PROXYUSERPWD] = $this->config['proxy']['user'].':'.$this->config['proxy']['password'];
+            $clientParameters['curl'][CURLOPT_PROXYUSERPWD] = $this->config['proxy']['user'].':'.$this->config['proxy']['pass'];
         }
 
         try {
