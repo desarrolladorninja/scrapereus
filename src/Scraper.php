@@ -8,7 +8,7 @@ use Scrapereus\Cache;
 class Scraper
 {
     protected $config = [];
-    protected $browser;
+    protected $browserList = [];
 
     public function __construct(array $config = [])
     {
@@ -33,6 +33,7 @@ class Scraper
             'proxy' => false,
             'proxies' => [],
             'userAgent' => 'random',
+            'time' => 30
         ];
 
         $this->config = $config + $defaults;
@@ -49,9 +50,29 @@ class Scraper
     public function getBrowser()
     {
         if ($browser = $this->newBrowser()) {
+            $time = new \DateTime();
+            $time->modify(sprintf('+%s seconds', $this->config['time']));
+
+            $this->browserList[] = ['time' => $time, 'browser' => $browser];
+
             return $browser;
         }
 
+        while (!$browser) {
+            foreach ($this->browserList as $key => $value) {
+                $now = new \DateTime();
+                if ($now > $value['time']) {
+                    $time = new \DateTime();
+                    $time->modify(sprintf('+%s seconds', $this->config['time']));
+
+                    $this->browserList[$key] = ['time' => $time, 'browser' => $value['browser']];
+
+                    return $value['browser'];
+                }
+            }
+            sleep($this->config['time']);
+        }
+        
         return false;
     }
 
