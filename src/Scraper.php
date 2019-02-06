@@ -66,6 +66,7 @@ class Scraper
                     $time->modify(sprintf('+%s seconds', $this->config['time']));
 
                     $this->browserList[$key] = ['time' => $time, 'browser' => $value['browser']];
+                    echo $time->format('H:i:s')."\n";
 
                     return $value['browser'];
                 }
