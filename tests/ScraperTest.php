@@ -53,7 +53,7 @@ class ScraperTest extends TestCase
             ]];
 
         $scraper = new Scraper($config);
-        for ($i=0; $i<5; $i++) {
+        for ($i=0; $i<100; $i++) {
             $item = $scraper->request('https://desarrollador.ninja/scraper.html?a='.$i);
             $this->assertEquals($item, $this->html);
         }

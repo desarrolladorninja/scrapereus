@@ -23,7 +23,9 @@ class Proxy
 
         do {
             $proxy = array_shift($this->config['proxies']);
-            if ($ok = $this->check($proxy)) {
+            if ($ok = $this->check($this->parse($proxy))) {
+
+                var_dump($ok, $proxy);
                 return $this->parse($proxy);
             }
         } while (!$ok && count($this->config['proxies']) > 0);
@@ -33,7 +35,6 @@ class Proxy
 
     public function check($proxy)
     {
-        $proxy = $this->parse($proxy);
         $proxyStr = $proxy['host'].':'.$proxy['port'];
         if ($proxy['user'] && $proxy['pass']) {
             $proxyStr .= ','.$proxy['user'].':'.$proxy['pass'];
@@ -48,7 +49,7 @@ class Proxy
         }
 
         if (in_array('get', $results['allowed'])) {
-            return true;
+            return $results['allowed'];
         } else {
             return false;
         }

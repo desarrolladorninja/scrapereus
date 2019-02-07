@@ -15,7 +15,7 @@ class Browser
                 'user' => null,
                 'pass' => null
             ],
-            'userAgent' => 'Mozilla/5.1 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+            'userAgent' => 'Scrapereus',
         ];
 
         $this->config = $config + $defaults;
@@ -32,29 +32,39 @@ class Browser
         $this->config['userAgents'] = $agents;
     }
 
-    public function getUserAgent($name)
+    public function setUserAgent($name)
     {
         switch ($name) {
             case 'google':
-                    return 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
-                break;
+                return 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
+            break;
 
-                case 'random':
-                    $id = rand(0, count($this->config['userAgents'])-1);
-                    return $this->config['userAgents'][$id];
-                break;
+            case 'random':
+                $id = rand(0, count($this->config['userAgents'])-1);
+                return $this->config['userAgents'][$id];
+            break;
             
             default:
-                    return $name;
-                break;
+                return $name;
+            break;
         }
+    }
+
+    public function getUserAgent()
+    {
+        return $this->config['userAgent'];
+    }
+
+    public function getProxy()
+    {
+        return $this->config['proxy'];
     }
 
     public function request($url)
     {
         $clientParameters = [
             'headers' => [
-                'User-Agent' => $this->getUserAgent($this->config['userAgent']),
+                'User-Agent' => $this->setUserAgent($this->config['userAgent']),
             ],
         ];
 
@@ -70,13 +80,9 @@ class Browser
             $clientParameters['curl'][CURLOPT_PROXYUSERPWD] = $this->config['proxy']['user'].':'.$this->config['proxy']['pass'];
         }
 
-        try {
-            $client = new GuzzleHttp\Client(['http_errors' => false]);
-            $response = $client->request('GET', $url, $clientParameters);
-            $data = $response->getBody();
-        } catch (\Exception $e) {
-            return false;
-        }
+        $client = new GuzzleHttp\Client(['http_errors' => false]);
+        $response = $client->request('GET', $url, $clientParameters);
+        $data = $response->getBody();
 
         return (string) $data;
     }

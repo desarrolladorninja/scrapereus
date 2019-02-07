@@ -41,8 +41,19 @@ class Scraper
 
     public function request($url)
     {
-        $browser = $this->getBrowser();
-        $data = $browser->request($url);
+        $key = $this->getBrowser();
+        $browser = $this->browserList[$key]['browser'];
+
+        try {
+            $data = $browser->request($url);
+        } catch (\Exception $e) {
+            $proxy = $browser->getProxy();
+            if (!$this->proxy->check($proxy)) {
+                unset($this->browserList[$key]);
+            }
+
+            return $this->request($url);
+        }
         
         return $data;
     }
@@ -54,11 +65,12 @@ class Scraper
             $time->modify(sprintf('+%s seconds', $this->config['time']));
 
             $this->browserList[] = ['time' => $time, 'browser' => $browser];
+            end($this->browserList);
 
-            return $browser;
+            return key($this->browserList);
         }
 
-        while (!$browser) {
+        while (!$browser && count($this->browserList) > 0) {
             foreach ($this->browserList as $key => $value) {
                 $now = new \DateTime();
                 if ($now > $value['time']) {
@@ -66,15 +78,16 @@ class Scraper
                     $time->modify(sprintf('+%s seconds', $this->config['time']));
 
                     $this->browserList[$key] = ['time' => $time, 'browser' => $value['browser']];
-                    echo $time->format('H:i:s')."\n";
 
-                    return $value['browser'];
+                    var_dump($value['browser']->getUserAgent(), $value['browser']->getProxy());
+
+                    return $key;
                 }
             }
             sleep($this->config['time']);
         }
         
-        return false;
+        throw new \Exception("No browser", 1);
     }
 
     public function newBrowser()
