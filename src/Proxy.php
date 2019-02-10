@@ -9,7 +9,7 @@ class Proxy
     public function __construct(array $config = [])
     {
         $defaults = [
-            'proxies' => [],
+            'proxy' => [],
         ];
 
         $this->config = $config + $defaults;
@@ -17,18 +17,17 @@ class Proxy
 
     public function get()
     {
-        if (count($this->config['proxies']) <= 0) {
+        if (!is_array($this->config['proxy']) || count($this->config['proxy']) <= 0) {
             return false;
         }
 
         do {
-            $proxy = array_shift($this->config['proxies']);
+            $proxy = array_shift($this->config['proxy']);
             if ($ok = $this->check($this->parse($proxy))) {
 
-                var_dump($ok, $proxy);
                 return $this->parse($proxy);
             }
-        } while (!$ok && count($this->config['proxies']) > 0);
+        } while (!$ok && count($this->config['proxy']) > 0);
 
         return false;
     }
@@ -36,13 +35,13 @@ class Proxy
     public function check($proxy)
     {
         $proxyStr = $proxy['host'].':'.$proxy['port'];
-        if ($proxy['user'] && $proxy['pass']) {
+        if (isset($proxy['user']) && isset($proxy['pass'])) {
             $proxyStr .= ','.$proxy['user'].':'.$proxy['pass'];
         }
         $url = 'https://desarrollador.ninja/ping.php';
 
         try {
-            $proxyChecker = new ProxyChecker($url);
+            $proxyChecker = new ProxyChecker($url, ['timeout' => 3]);
             $results = $proxyChecker->checkProxy($proxyStr);
         } catch(\Exception $err) {
             return false;

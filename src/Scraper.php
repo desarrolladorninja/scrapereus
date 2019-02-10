@@ -18,8 +18,9 @@ class Scraper
 
     public function init()
     {
-        $config['proxies'] = $this->config['proxies'];
+        $config['proxy'] = $this->config['proxy'];
         $this->proxy = new Proxy($config);
+        $this->cache = new Cache();
     }
 
     /**
@@ -31,9 +32,9 @@ class Scraper
     {
         $defaults = [
             'proxy' => false,
-            'proxies' => [],
             'userAgent' => 'random',
-            'time' => 30
+            'wait' => 30,
+            'cache' => true,
         ];
 
         $this->config = $config + $defaults;
@@ -41,6 +42,10 @@ class Scraper
 
     public function request($url)
     {
+        if ($data = $this->getCache($url)) {
+            return $data;
+        }
+
         $key = $this->getBrowser();
         $browser = $this->browserList[$key]['browser'];
 
@@ -49,11 +54,14 @@ class Scraper
         } catch (\Exception $e) {
             $proxy = $browser->getProxy();
             if (!$this->proxy->check($proxy)) {
+                $this->browserList[$key] = null;
                 unset($this->browserList[$key]);
             }
 
             return $this->request($url);
         }
+
+        $this->setCache($url, $data);
         
         return $data;
     }
@@ -62,7 +70,7 @@ class Scraper
     {
         if ($browser = $this->newBrowser()) {
             $time = new \DateTime();
-            $time->modify(sprintf('+%s seconds', $this->config['time']));
+            $time->modify(sprintf('+%s seconds', $this->config['wait']));
 
             $this->browserList[] = ['time' => $time, 'browser' => $browser];
             end($this->browserList);
@@ -75,16 +83,14 @@ class Scraper
                 $now = new \DateTime();
                 if ($now > $value['time']) {
                     $time = new \DateTime();
-                    $time->modify(sprintf('+%s seconds', $this->config['time']));
+                    $time->modify(sprintf('+%s seconds', $this->config['wait']));
 
                     $this->browserList[$key] = ['time' => $time, 'browser' => $value['browser']];
-
-                    var_dump($value['browser']->getUserAgent(), $value['browser']->getProxy());
 
                     return $key;
                 }
             }
-            sleep($this->config['time']);
+            sleep(1);
         }
         
         throw new \Exception("No browser", 1);
@@ -106,8 +112,21 @@ class Scraper
         return $browser;
     }
 
-    public function getCache()
+    public function setCache($key, $data)
     {
+        if (!$this->config['cache']) {
+            return false;
+        }
 
+        return $this->cache->save($key, $data);
+    }
+
+    public function getCache($key)
+    {
+        if (!$this->config['cache']) {
+            return false;
+        }
+
+        return $this->cache->get($key);
     }
 }

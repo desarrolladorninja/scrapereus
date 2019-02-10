@@ -20,7 +20,7 @@ class ProxyTest extends TestCase
     {
         $proxy = new Proxy();
 
-        $item = $proxy->check('a:b:c:d');
+        $item = $proxy->check($proxy->parse('a:b:c:d'));
         $this->assertFalse($item);
     }
 

@@ -22,6 +22,7 @@ class Cache
 
     public function get($key)
     {
+        $key = urlencode($key);
         $item = $this->stash->getItem($key);
         $data = $item->get();
 
@@ -34,6 +35,7 @@ class Cache
 
     public function save($key, $value)
     {
+        $key = urlencode($key);
         $item = $this->stash->getItem($key);
         $item->lock();
 

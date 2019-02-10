@@ -35,6 +35,6 @@ class BrowserTest extends TestCase
         $this->assertTrue(!empty($item));
 
         $item = $browser->getUserAgent('google');
-        $this->assertEquals($item, 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
+        $this->assertEquals($item, 'Scrapereus');
     }
 }
